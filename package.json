@@ -2,8 +2,10 @@
   "name": "solution",
   "version": "1.0.0",
   "description": "This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "compile": "hardhat compile",
     "deploy": "hardhat run --network evmSidechain scripts/deploy-se.ts",
     "create": "hardhat run --network evmSidechain scripts/create-se.ts",
@@ -19,6 +21,11 @@
     "@chainlink/contracts": "^1.0.0",
     "@openzeppelin/contracts": "^5.0.2",
     "ethers": "^6.11.1",
-    "hardhat": "^2.22.2"
+    "hardhat": "^2.22.2",
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2"
   }
 }
