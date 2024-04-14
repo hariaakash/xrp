@@ -43,17 +43,21 @@ app.get('/getPortfolio/:user', (req, res) => {
 });
 
 // API to buy stocks
-app.post('/buy', (req, res) => {
+app.post('/buy', async (req, res) => {
     const { user, stockId, quantity } = req.body;
     const stock = stocks.find(s => s.id === parseInt(stockId));
     if (!stock) {
         return res.status(404).json({ message: "Stock not found" });
     }
-    if (!portfolios[user]) {
-        portfolios[user] = [];
+    try {
+        const accounts = await web3.eth.getAccounts();
+        const transaction = await contract.methods.buyStock(parseInt(stockId), parseInt(quantity)).send({ from: accounts[0], value: web3.utils.toWei((stock.price * quantity / 100).toString(), 'ether') });
+        console.log('Transaction:', transaction);
+        res.json({ message: "Stock bought successfully" });
+    } catch (error) {
+        console.error('Transaction failed with error:', error);
+        res.status(500).json({ message: "Transaction failed" });
     }
-    portfolios[user].push({ id: portfolios[user].length + 1, stockId: parseInt(stockId), quantity });
-    res.json({ message: "Stock bought successfully" });
 });
 
 // API to sell stocks

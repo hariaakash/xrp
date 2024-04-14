@@ -5,29 +5,36 @@ contract XRPEVMSidechain {
     struct Stock {
         string symbol;
         uint256 quantity;
+    }
+
+    struct Portfolio {
+        string symbol;
+        uint256 quantity;
         uint256 price;
+        uint256 purchaseTime;
+        uint256 hedgePercent;
     }
 
     mapping(string => Stock) public stocks;
-    mapping(address => mapping(string => uint256)) public portfolio;
+    mapping(address => Portfolio[]) public userPortfolios;
 
     constructor() {
-        stocks["AAPL"] = Stock("AAPL", 1000, 0);
-        stocks["GOOGL"] = Stock("GOOGL", 1000, 0);
-        stocks["MSFT"] = Stock("MSFT", 1000, 0);
+        stocks["AAPL"] = Stock("AAPL", 1000);
+        stocks["GOOGL"] = Stock("GOOGL", 1000);
+        stocks["MSFT"] = Stock("MSFT", 1000);
     }
 
-    function buyStock(string memory stockSymbol, uint256 quantity, uint256 price) public {
+    function buyStock(string memory stockSymbol, uint256 quantity, uint256 price, uint256 hedgePercent) public {
         require(stocks[stockSymbol].quantity >= quantity, "Insufficient stock available");
         stocks[stockSymbol].quantity -= quantity;
-        portfolio[msg.sender][stockSymbol] += quantity;
-        // Handle payment logic here
+        userPortfolios[msg.sender].push(Portfolio(stockSymbol, quantity, price, block.timestamp, hedgePercent));
     }
 
-    function sellStock(string memory stockSymbol, uint256 quantity, uint256 price) public {
-        require(portfolio[msg.sender][stockSymbol] >= quantity, "Insufficient stock in portfolio");
-        stocks[stockSymbol].quantity += quantity;
-        portfolio[msg.sender][stockSymbol] -= quantity;
+    function sellStock(uint256 portfolioIndex, uint256 quantity, uint256 price) public {
+        Portfolio storage userPortfolio = userPortfolios[msg.sender][portfolioIndex];
+        require(userPortfolio.quantity >= quantity, "Insufficient stock in portfolio");
+        stocks[userPortfolio.symbol].quantity += quantity;
+        userPortfolio.quantity -= quantity;
         // Handle payment logic here
     }
 
@@ -37,26 +44,5 @@ contract XRPEVMSidechain {
         allStocks[1] = stocks["GOOGL"];
         allStocks[2] = stocks["MSFT"];
         return allStocks;
-    }
-
-    function getPortfolioStocks() public view returns (Stock[] memory) {
-        uint256 portfolioSize = 0;
-        for (uint256 i = 0; i < 3; i++) {
-            string memory symbol = i == 0 ? "AAPL" : i == 1 ? "GOOGL" : "MSFT";
-            if (portfolio[msg.sender][symbol] > 0) {
-                portfolioSize++;
-            }
-        }
-
-        Stock[] memory portfolioStocks = new Stock[](portfolioSize);
-        uint256 index = 0;
-        for (uint256 i = 0; i < 3; i++) {
-            string memory symbol = i == 0 ? "AAPL" : i == 1 ? "GOOGL" : "MSFT";
-            if (portfolio[msg.sender][symbol] > 0) {
-                portfolioStocks[index] = Stock(symbol, portfolio[msg.sender][symbol], stocks[symbol].price);
-                index++;
-            }
-        }
-        return portfolioStocks;
     }
 }
