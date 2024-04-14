@@ -5,16 +5,18 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
-    "deploy-token": "hardhat run --network evmSidechain scripts/deploy-token.ts",
-    "deploy-voting": "hardhat run --network evmSidechain scripts/deploy-voting.ts",
+    "deploy": "hardhat run --network evmSidechain scripts/deploy-se.ts",
+    "create": "hardhat run --network evmSidechain scripts/create-se.ts",
+    "get": "hardhat run --network evmSidechain scripts/get-se.ts",
     "buy": "hardhat run --network evmSidechain scripts/buy.ts",
     "create-proposal": "hardhat run --network evmSidechain scripts/create-proposal.ts",
     "vote-proposal": "hardhat run --network evmSidechain scripts/vote-proposal.ts",
-    "flatten": "hardhat flatten > Flattened.sol"
+    "flatten": "hardhat flatten contracts/StockExchange.sol > Flattened.sol"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@chainlink/contracts": "^1.0.0",
     "@openzeppelin/contracts": "^5.0.2",
     "ethers": "^6.11.1",
     "hardhat": "^2.22.2"
