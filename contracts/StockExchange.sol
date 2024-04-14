@@ -35,7 +35,6 @@ contract XRPEVMSidechain {
         require(userPortfolio.quantity >= quantity, "Insufficient stock in portfolio");
         stocks[userPortfolio.symbol].quantity += quantity;
         userPortfolio.quantity -= quantity;
-        // Handle payment logic here
     }
 
     function getAllStocks() public view returns (Stock[] memory) {
@@ -44,5 +43,9 @@ contract XRPEVMSidechain {
         allStocks[1] = stocks["GOOGL"];
         allStocks[2] = stocks["MSFT"];
         return allStocks;
+    }
+
+    function getPortfolioStocks() public view returns (Portfolio[] memory) {
+        return userPortfolios[msg.sender];
     }
 }
